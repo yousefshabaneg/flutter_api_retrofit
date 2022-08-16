@@ -14,14 +14,14 @@ void initGitIt() {
 
   getIt.registerLazySingleton<MyRepo>(() => MyRepo(getIt()));
   getIt.registerLazySingleton<WebServices>(
-    () => WebServices(Dio()),
+    () => WebServices(createAndSetupDio()),
   );
 }
 
 Dio createAndSetupDio() {
   final Dio dio = Dio();
   dio
-    ..options.connectTimeout = 1 * 1000
+    ..options.connectTimeout = 20 * 1000
     ..options.connectTimeout = 10 * 1000;
 
   dio.interceptors.add(

@@ -12,11 +12,21 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<User> usersList = [];
+  User user = User();
 
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<MyCubit>(context).emitGetAllUsers();
+    // BlocProvider.of<MyCubit>(context).emitGetAllUsers();
+    // BlocProvider.of<MyCubit>(context).emitGetUserDetails(200);
+    BlocProvider.of<MyCubit>(context).emitCreateNewUser(
+      User(
+        name: "Yousef Shaban",
+        email: "yousef@gmail.com",
+        gender: "male",
+        status: 'active',
+      ),
+    );
   }
 
   @override
@@ -27,29 +37,53 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Column(
         children: [
-          BlocBuilder<MyCubit, MyState>(
-            builder: (context, state) {
-              if (state is GetAllUsers) {
-                usersList = state.users;
-                return ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: usersList.length,
-                  itemBuilder: (context, index) => Container(
-                    height: 50,
-                    color: Colors.amber,
-                    child: Center(
-                      child: Text(usersList[index].email ?? ''),
-                    ),
-                  ),
-                );
-              }
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            },
-          ),
+          buildGetUserDetails(),
         ],
       ),
+    );
+  }
+
+  Widget buildGetUserDetails() {
+    return BlocBuilder<MyCubit, MyState>(
+      builder: (context, state) {
+        if (state is CreateNewUser) {
+          user = state.newUser;
+          return Container(
+            height: 50,
+            color: Colors.amber,
+            child: Center(
+              child: Text(user.email ?? ''),
+            ),
+          );
+        }
+        // if (state is GetUserDetails) {
+        //   user = state.userDetails;
+        //   return Container(
+        //     height: 50,
+        //     color: Colors.amber,
+        //     child: Center(
+        //       child: Text(user.email ?? ''),
+        //     ),
+        //   );
+        // }
+        // if (state is GetAllUsers) {
+        //   usersList = state.users;
+        //   return ListView.builder(
+        //     shrinkWrap: true,
+        //     itemCount: usersList.length,
+        //     itemBuilder: (context, index) => Container(
+        //       height: 50,
+        //       color: Colors.amber,
+        //       child: Center(
+        //         child: Text(usersList[index].email ?? ''),
+        //       ),
+        //     ),
+        //   );
+        // }
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      },
     );
   }
 }

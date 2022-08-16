@@ -7,9 +7,17 @@ class MyRepo {
   MyRepo(this.webServices);
 
   Future<List<User>> getAllUsers() async {
-    final response = await webServices.getAllUsers();
-    print(response[0].email);
-    // return response.map((user) => User.fromJson(user.toJson())).toList();
-    return response;
+    return webServices.getAllUsers();
+  }
+
+  Future<User> getUserById(int userId) async {
+    return webServices.getUserById(userId);
+  }
+
+  Future<User> createNewUser(User newUser) async {
+    return webServices.createNewUser(newUser, "Bearer $token");
   }
 }
+
+const String token =
+    "63923efe213777b4049559e7d1cee30b1f50adf8d1175f1a1798b54e6559d0d6";
