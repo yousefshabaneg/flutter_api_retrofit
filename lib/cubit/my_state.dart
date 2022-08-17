@@ -22,3 +22,9 @@ class CreateNewUser extends MyState {
 
   CreateNewUser(this.newUser);
 }
+
+class DeleteUser extends MyState {
+  final HttpResponse data;
+
+  DeleteUser(this.data);
+}

@@ -1,5 +1,6 @@
 import 'package:api_course/user.dart';
 import 'package:api_course/web_services.dart';
+import 'package:retrofit/dio.dart';
 
 class MyRepo {
   final WebServices webServices;
@@ -16,6 +17,10 @@ class MyRepo {
 
   Future<User> createNewUser(User newUser) async {
     return webServices.createNewUser(newUser, "Bearer $token");
+  }
+
+  Future<HttpResponse> deleteUser(int userId) async {
+    return webServices.deleteUser(userId, "Bearer $token");
   }
 }
 
