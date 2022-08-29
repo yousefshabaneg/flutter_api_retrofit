@@ -1,4 +1,6 @@
 import 'package:api_course/cubit/my_cubit.dart';
+import 'package:api_course/cubit/result_state.dart';
+import 'package:api_course/network_exceptions.dart';
 import 'package:api_course/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,16 +21,15 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
     // BlocProvider.of<MyCubit>(context).emitGetAllUsers();
     // BlocProvider.of<MyCubit>(context).emitGetUserDetails(200);
-    // BlocProvider.of<MyCubit>(context).emitCreateNewUser(
-    //   User(
-    //     name: "Yousef Shaban",
-    //     email: "yousef@gmail.com",
-    //     gender: "male",
-    //     status: 'active',
-    //   ),
-    // );
-
-    BlocProvider.of<MyCubit>(context).emitDeleteUser(2937);
+    BlocProvider.of<MyCubit>(context).emitCreateNewUser(
+      User(
+        name: "Yousef Shaban",
+        email: "yousef.eg@gmasil.com",
+        gender: "male",
+        status: 'active',
+      ),
+    );
+    // BlocProvider.of<MyCubit>(context).emitDeleteUser(2937);
   }
 
   @override
@@ -46,19 +47,40 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget buildGetUserDetails() {
-    return BlocBuilder<MyCubit, MyState>(
-      builder: (context, state) {
-        if (state is DeleteUser) {
-          // user = state.newUser;
-          return Container(
-            height: 50,
-            color: Colors.amber,
-            child: Center(
-              child: Text(state.data.response.statusCode.toString()),
-            ),
-          );
-        }
-        // if (state is CreateNewUser) {
+    return BlocBuilder<MyCubit, ResultState<dynamic>>(
+      builder: (context, ResultState<dynamic> state) {
+        return state.when(
+          idle: () => const Center(
+            child: CircularProgressIndicator(),
+          ),
+          loading: () => const Center(
+            child: CircularProgressIndicator(),
+          ),
+          success: (dynamic userData) {
+            final user = userData as User;
+            return Container(
+              height: 50,
+              color: Colors.amber,
+              child: Center(
+                child: Text(user.email ?? ''),
+              ),
+            );
+          },
+          error: (networkExceptions) => Center(
+            child: Text(NetworkExceptions.getErrorMessage(networkExceptions)),
+          ),
+        );
+        // if (state is DeleteUser) {
+        //   // user = state.newUser;
+        //   return Container(
+        //     height: 50,
+        //     color: Colors.amber,
+        //     child: Center(
+        //       child: Text(state.data.response.statusCode.toString()),
+        //     ),
+        //   );
+        // }
+        // if (state is ResultState) {
         //   user = state.newUser;
         //   return Container(
         //     height: 50,
@@ -92,9 +114,6 @@ class _HomeScreenState extends State<HomeScreen> {
         //     ),
         //   );
         // }
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
       },
     );
   }

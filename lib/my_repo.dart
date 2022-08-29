@@ -1,3 +1,5 @@
+import 'package:api_course/api_result.dart';
+import 'package:api_course/network_exceptions.dart';
 import 'package:api_course/user.dart';
 import 'package:api_course/web_services.dart';
 import 'package:retrofit/dio.dart';
@@ -7,20 +9,41 @@ class MyRepo {
 
   MyRepo(this.webServices);
 
-  Future<List<User>> getAllUsers() async {
-    return webServices.getAllUsers();
+  Future<ApiResult<List<User>>> getAllUsers() async {
+    try {
+      final response = await webServices.getAllUsers();
+      return ApiResult.success(response);
+    } catch (error) {
+      return ApiResult.failure(NetworkExceptions.getDioException(error));
+    }
   }
 
-  Future<User> getUserById(int userId) async {
-    return webServices.getUserById(userId);
+  Future<ApiResult<User>> getUserById(int userId) async {
+    try {
+      final response = await webServices.getUserById(userId);
+      return ApiResult.success(response);
+    } catch (error) {
+      return ApiResult.failure(NetworkExceptions.getDioException(error));
+    }
   }
 
-  Future<User> createNewUser(User newUser) async {
-    return webServices.createNewUser(newUser, "Bearer $token");
+  Future<ApiResult<User>> createNewUser(User newUser) async {
+    try {
+      final response =
+          await webServices.createNewUser(newUser, "Bearer $token");
+      return ApiResult.success(response);
+    } catch (error) {
+      return ApiResult.failure(NetworkExceptions.getDioException(error));
+    }
   }
 
-  Future<HttpResponse> deleteUser(int userId) async {
-    return webServices.deleteUser(userId, "Bearer $token");
+  Future<ApiResult<HttpResponse>> deleteUser(int userId) async {
+    try {
+      final response = await webServices.deleteUser(userId, "Bearer $token");
+      return ApiResult.success(response);
+    } catch (error) {
+      return ApiResult.failure(NetworkExceptions.getDioException(error));
+    }
   }
 }
 

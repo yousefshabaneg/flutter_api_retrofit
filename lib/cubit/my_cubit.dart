@@ -1,35 +1,55 @@
+import 'package:api_course/cubit/result_state.dart';
 import 'package:api_course/my_repo.dart';
+import 'package:api_course/network_exceptions.dart';
 import 'package:api_course/user.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:retrofit/dio.dart';
 
-part 'my_state.dart';
-
-class MyCubit extends Cubit<MyState> {
+class MyCubit extends Cubit<ResultState<dynamic>> {
   final MyRepo myRepo;
-  MyCubit(this.myRepo) : super(MyInitial());
-  void emitGetAllUsers() {
-    myRepo.getAllUsers().then((usersList) {
-      emit(GetAllUsers(usersList));
-    });
+  MyCubit(this.myRepo) : super(const Idle());
+  Future<void> emitGetAllUsers() async {
+    final result = await myRepo.getAllUsers();
+
+    result.when(
+      success: (List<User> allUsers) {
+        emit(ResultState.success(allUsers));
+      },
+      failure: (NetworkExceptions networkExceptions) {
+        emit(ResultState.error(networkExceptions));
+      },
+    );
   }
 
-  void emitGetUserDetails(int userId) {
-    myRepo.getUserById(userId).then((userDetails) {
-      emit(GetUserDetails(userDetails));
-    });
+  Future<void> emitGetUserDetails(int userId) async {
+    final result = await myRepo.getUserById(userId);
+
+    result.when(
+      success: (User user) => emit(ResultState.success(user)),
+      failure: (NetworkExceptions networkExceptions) =>
+          emit(ResultState.error(networkExceptions)),
+    );
   }
 
-  void emitCreateNewUser(User newUser) {
-    myRepo.createNewUser(newUser).then((newUser) {
-      emit(CreateNewUser(newUser));
-    });
+  Future<void> emitCreateNewUser(User newUser) async {
+    final result = await myRepo.createNewUser(newUser);
+
+    result.when(
+      success: (User userData) {
+        emit(ResultState.success(userData));
+      },
+      failure: (NetworkExceptions networkExceptions) {
+        emit(ResultState.error(networkExceptions));
+      },
+    );
   }
 
-  void emitDeleteUser(int id) {
-    myRepo.deleteUser(id).then((data) {
-      emit(DeleteUser(data));
-    });
+  Future<void> emitDeleteUser(int userId) async {
+    final result = await myRepo.deleteUser(userId);
+    result.when(
+      success: (HttpResponse response) => emit(ResultState.success(response)),
+      failure: (NetworkExceptions networkExceptions) =>
+          emit(ResultState.error(networkExceptions)),
+    );
   }
 }
